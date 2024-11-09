@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Your Cart</title>
+  <link rel="stylesheet" href="cart.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="navbar">
+      <div class="logo">
+        <a href="index.html"><img src="logo.jpg" width="50px"></a>
+      </div>
+      <nav>
+        <ul id="MenuItems">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="about.html">Sellers Info</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="account.html">Account</a></li>
+        </ul>
+      </nav>
+      <a href="cart.html"><img src="cart.jpeg" width="30px" height="30px"></a>
+    </div>
+  </div>
+
+  <!-- Cart Section -->
+  <section id="cart" class="cart-section">
+    <h2>Your Cart</h2>
+    <div id="cart-items">
+      <!-- Cart items will be dynamically added here -->
+      <p>Your cart is empty!</p>
+    </div>
+    <button onclick="proceedToCheckout()">Proceed to Checkout</button>
+  </section>
+
+  <!-- Checkout Section (hidden by default) -->
+  <section id="checkout" class="checkout-section" style="display:none;">
+    <h2>Checkout</h2>
+    <form id="checkout-form" onsubmit="completeCheckout(event)">
+      <div class="form-group">
+        <label for="quantity">Product Quantity (kg):</label>
+        <input type="number" id="quantity" name="quantity" min="1" required>
+      </div>
+      <div class="form-group">
+        <label for="address">Shipping Address:</label>
+        <textarea id="address" name="address" required></textarea>
+      </div>
+      <button type="submit">Place Order</button>
+    </form>
+  </section>
+
+  <!-- Order Confirmation Section (hidden by default) -->
+  <section id="order-status" class="order-status-section" style="display:none;">
+    <h2>Order Confirmation</h2>
+    <p>Your order has been placed successfully! You will receive a confirmation email with the order details.</p>
+    <button onclick="window.location.href='index.html'">Back to Home</button>
+  </section>
+
+  <script>
+    // Function to display cart items
+    function displayCart() {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      let cartItemsDiv = document.getElementById('cart-items');
+
+      // If the cart is empty
+      if (cart.length === 0) {
+        cartItemsDiv.innerHTML = '<p>Your cart is empty!</p>';
+      } else {
+        let cartHTML = '<ul>';
+        let totalPrice = 0;
+
+        // Loop through the cart and display each item
+        cart.forEach(item => {
+          cartHTML += `
+            <li>
+              ${item.name} - ₹${item.price} x ${item.quantity}
+            </li>
+          `;
+          totalPrice += item.price * item.quantity;
+        });
+
+        cartHTML += `</ul><p><strong>Total Price: ₹${totalPrice}</strong></p>`;
+        cartItemsDiv.innerHTML = cartHTML;
+      }
+    }
+
+    // Display cart items when the page loads
+    window.onload = displayCart;
+
+
+    // Function to handle the "Proceed to Checkout" button
+    function proceedToCheckout() {
+      // Hide the cart section and show the checkout section
+      document.getElementById('cart').style.display = 'none';
+      document.getElementById('checkout').style.display = 'block';
+    }
+
+    // Function to complete the checkout
+    function completeCheckout(event) {
+      event.preventDefault(); // Prevent the form from submitting
+
+      // Get checkout data
+      const quantity = document.getElementById('quantity').value;
+      const address = document.getElementById('address').value;
+
+      // Simulate order placement by storing the checkout data in localStorage (optional)
+      const orderData = {
+        quantity: quantity,
+        address: address,
+        items: JSON.parse(localStorage.getItem('cart')) || []
+      };
+      localStorage.setItem('orderData', JSON.stringify(orderData));
+
+      // Hide the checkout section and show the order confirmation
+      document.getElementById('checkout').style.display = 'none';
+      document.getElementById('order-status').style.display = 'block';
+    }
+    function completeOrder(event) {
+  event.preventDefault(); // Prevent the form from submitting
+
+  // Get order data
+  const quantity = document.getElementById('quantity').value;
+  const address = document.getElementById('address').value;
+
+  // Simulate order placement by storing the order data in localStorage
+  const orderData = {
+    quantity: quantity,
+    address: address,
+    items: JSON.parse(localStorage.getItem('cart')) || []
+  };
+  localStorage.setItem('orderData', JSON.stringify(orderData));
+
+  // Hide the place order section and show the order confirmation
+  document.getElementById('place-order').style.display = 'none';
+  document.getElementById('order-status').style.display = 'block';
+
+  // Display order details
+  displayOrderDetails(orderData);
+
+  // Clear the cart by removing it from localStorage
+  localStorage.removeItem('cart');
+
+  // Optionally, update the cart display on the current page (if needed)
+  displayCart();
+}
+function backToHome() {
+  // Clear the cart by removing it from localStorage
+  localStorage.removeItem('cart');
+  
+  // Redirect to the home page
+  window.location.href = 'index.html';
+}
+  </script>
+</body>
+</html>
